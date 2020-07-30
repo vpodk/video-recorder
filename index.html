@@ -5,20 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
 <title>Video Recorder</title>
 <style>
-.record-button {position: relative; height: 2em}
-.record-button input, .record-button span {position: absolute;}
+.record-button {position: relative; height: 1.5em;}
+.record-button input, .record-button button {padding: .25em; position: absolute; width: 8em;}
 .record-button input {opacity: 0.1}
+#preview {height: 15em; max-width: 25em; width: 100%;}
+#preview, #download {display: none;}
+video {background: #666; margin: 1em 0;}
 </style>
 </head>
 <body>
 <div class="record-button">
-  <span>Record</span>
-  <input onchange="play(event)" type="file" accept="video/*" capture>
+  <button>Record video</button>
+  <input title="Record video" onchange="play(event)" type="file" accept="video/*" capture>
 </div>
 <div>
-<video id="preview" width="160" height="120" autoplay controls></video>
+  <video id="preview" width="160" height="120" autoplay controls></video>
 </div>
-
+<div>
+  <a id="download" href="javascript:void(0)">Download</a>
+</div>
 <script>
 function play(event) {
   const type = 'video/mp4';
@@ -32,8 +37,15 @@ function play(event) {
   data.append('file', new File([blob], 'video.mp4', {type: type}));
   console.log(data);
 
-  document.getElementById('preview').src = URL.createObjectURL(blob);
+  const preview = document.getElementById('preview');
+  preview.src = URL.createObjectURL(blob);
   // document.getElementById('preview').src = URL.createObjectURL(file);
+
+  const download = document.getElementById('download');
+  download.href = preview.src;
+  download.download = 'video.mp4';
+
+  preview.style.display = download.style.display = 'block';
 }
 </script>
 </body></html>
