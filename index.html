@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta charset="utf-8">
+<title>Video Recorder</title>
+<style>
+.record-button {position: relative; height: 2em}
+.record-button input, .record-button span {position: absolute;}
+.record-button input {opacity: 0.1}
+</style>
+</head>
+<body>
+<div class="record-button">
+  <span>Record</span>
+  <input onchange="play(event)" type="file" accept="video/*" capture>
+</div>
+<div>
+<video id="preview" width="160" height="120" autoplay controls></video>
+</div>
+
+<script>
+function play(event) {
+  const type = 'video/mp4';
+  const file = event.target.files[0];
+  const blob = file.slice(0, file.size, type);
+
+  console.log('file:', file);
+  console.log('blob:', blob);
+
+  const data = new FormData();
+  data.append('file', new File([blob], 'video.mp4', {type: type}));
+  console.log(data);
+
+  document.getElementById('preview').src = URL.createObjectURL(blob);
+  // document.getElementById('preview').src = URL.createObjectURL(file);
+}
+</script>
+</body></html>
