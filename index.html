@@ -9,18 +9,46 @@
 .record-button input, .record-button button {padding: .25em; position: absolute; width: 8em;}
 .record-button input {opacity: 0.1}
 #preview {height: 15em; max-width: 25em; width: 100%;}
-#preview, #download {display: none;}
+#preview2, #download {display: none;}
 video {background: #666; margin: 1em 0;}
 </style>
 </head>
 <body>
+
+<div>
+  <video id="preview" width="160" height="120" autoplay controls></video>
+</div>
+
+<button onclick="recordVideo()">Record video</button>
+<script>
+const recordVideo = () => {
+  const constraints = { audio: true, video: true };
+  navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+    const preview = document.getElementById('preview');
+    preview.srcObject = stream;
+    // console.log(stream);
+    preview.onloadedmetadata = (e) => {
+      // console.log(e);
+      preview.play();
+      // console.log(preview);
+      // console.log(preview.src);
+      // console.log(preview.srcObject);
+      // console.log(preview.srcObject.getTracks());
+      setTimeout(() => {
+        stream.getTracks().forEach(track => track.stop());
+      }, 1000 * 10);
+    };
+  }).catch(err => {
+    console.log(err.name + ': ' + err.message);
+  });
+};
+</script>
+
 <div class="record-button">
   <button>Record video</button>
   <input title="Record video" onchange="play(event)" type="file" accept="video/*" capture>
 </div>
-<div>
-  <video id="preview" width="160" height="120" autoplay controls></video>
-</div>
+
 <div>
   <a id="download" href="javascript:void(0)">Download</a>
 </div>
