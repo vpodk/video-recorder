@@ -8,7 +8,7 @@
 .record-button {position: relative; height: 1.5em;}
 .record-button input, .record-button button {padding: .25em; position: absolute; width: 8em;}
 .record-button input {opacity: 0.1}
-#preview {height: 15em; max-width: 25em; width: 100%;}
+#preview, #log {height: 15em; max-width: 25em; width: 100%;}
 #preview2, #download {display: none;}
 video {background: #666; margin: 1em 0;}
 </style>
@@ -18,29 +18,40 @@ video {background: #666; margin: 1em 0;}
 <div>
   <video id="preview" width="160" height="120" autoplay controls></video>
 </div>
+<div><textarea id="log" readonly></textarea></div>
 
-<button onclick="recordVideo()">Record video</button>
+<button onclick="handleRecording(this)">Record video</button>
 <script>
-const recordVideo = () => {
-  const constraints = { audio: true, video: true };
-  navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-    const preview = document.getElementById('preview');
-    preview.srcObject = stream;
-    // console.log(stream);
-    preview.onloadedmetadata = (e) => {
-      // console.log(e);
-      preview.play();
-      // console.log(preview);
-      // console.log(preview.src);
-      // console.log(preview.srcObject);
-      // console.log(preview.srcObject.getTracks());
-      setTimeout(() => {
-        stream.getTracks().forEach(track => track.stop());
-      }, 1000 * 10);
-    };
-  }).catch(err => {
-    console.log(err.name + ': ' + err.message);
-  });
+const log = (message) => {
+  document.getElementById('log').value += message + "\r\n";
+  console.log(message);
+};
+
+let recordingStream = null;
+const handleRecording = (button) => {
+  const isRecording = recordingStream != null;
+
+  if (isRecording) {
+    if (recordingStream) {
+      recordingStream.getTracks().forEach(track => track.stop());
+      recordingStream = null;
+    }
+    button.textContent = 'Record video';
+  } else {
+    button.textContent = 'Stop recording';
+    const constraints = { audio: true, video: true };
+    navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+      recordingStream = stream;
+      const preview = document.getElementById('preview');
+      preview.srcObject = stream;
+      preview.onloadedmetadata = (e) => {
+        preview.play();
+      };
+    }).catch(err => {
+      log(err.name + ': ' + err.message);
+      button.textContent = 'Record video';
+    });
+  }
 };
 </script>
 
