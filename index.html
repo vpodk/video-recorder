@@ -23,7 +23,7 @@ video {background: #666; margin: 1em 0;}
 <button onclick="handleRecording(this)">Record video</button>
 <script>
 const log = (message) => {
-  document.getElementById('log').value += message + "\r\n";
+  document.getElementById('log').value += message + "\r\n\r\n";
   console.log(message);
 };
 
@@ -39,6 +39,15 @@ const handleRecording = (button) => {
     button.textContent = 'Record video';
   } else {
     button.textContent = 'Stop recording';
+
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+      devices.forEach(device => {
+        log('device: ' + JSON.stringify(device));
+      });
+    });
+
+    log('constraints: ' + JSON.stringify(navigator.mediaDevices.getSupportedConstraints()));
+
     const constraints = { audio: true, video: true };
     navigator.mediaDevices.getUserMedia(constraints).then(stream => {
       recordingStream = stream;
