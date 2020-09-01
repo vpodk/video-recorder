@@ -40,13 +40,11 @@ const handleRecording = (button) => {
   } else {
     button.textContent = 'Stop recording';
 
-    navigator.mediaDevices.enumerateDevices().then(devices => {
-      devices.forEach(device => {
-        log('device: ' + JSON.stringify(device));
-      });
-    });
-
     log('constraints: ' + JSON.stringify(navigator.mediaDevices.getSupportedConstraints()));
+
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+      devices.forEach(device => log('device: ' + JSON.stringify(device)));
+    });
 
     const constraints = { audio: true, video: true };
     navigator.mediaDevices.getUserMedia(constraints).then(stream => {
